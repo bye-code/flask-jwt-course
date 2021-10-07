@@ -1,6 +1,8 @@
 from flask import Flask
-from src.routes.routes import routes
+from flask_qrcode import QRcode
+from src.routes.routes import routes, qrcode_route
 from src.database import db
+import qrcode
 
 class Application:
 
@@ -27,6 +29,7 @@ class Application:
             self.app.config['SQLALCHEMY_DATABASE_URI'] = self.app.config['DATABASE_CONN']
             self.app.config['SQLALCHEMY_TRACK_MODICATIONS'] = True
             db.init_app(self.app)
+            #QRcode(self.app) 
         except KeyError as e:
             print("An error ocurred with the configurations")
             raise e
@@ -39,6 +42,8 @@ class Application:
         self.app.add_url_rule(routes["signup"], view_func=routes["signup_controller"], methods=['POST'])
         self.app.add_url_rule(routes["signin"], view_func=routes["signin_controller"], methods=['POST'])
         self.app.add_url_rule(routes["private"], view_func=routes["private_controller"], methods=['GET'])
+        self.app.add_url_rule(qrcode_route["qrcode"], view_func=qrcode_route["qrcode_view"], methods=['GET'])
+
 
     def __init_db(self):
         db.create_all(app=self.app)
